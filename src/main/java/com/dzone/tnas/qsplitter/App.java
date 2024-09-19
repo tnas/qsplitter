@@ -1,10 +1,15 @@
 package com.dzone.tnas.qsplitter;
 
-/**
- * Hello world!
- */
+import java.sql.SQLException;
+
+import com.dzone.tnas.qsplitter.dao.UserDao;
+
 public class App {
-    public static void main(String[] args) {
-        System.out.println("Hello World!");
+	
+    public static void main(String[] args) throws SQLException {
+
+    	var userDao = new UserDao();
+    	userDao.insertRandomCollection(10);
+    	userDao.findAll();
     }
 }
