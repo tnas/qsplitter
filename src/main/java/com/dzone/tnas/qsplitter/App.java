@@ -1,15 +1,11 @@
 package com.dzone.tnas.qsplitter;
 
-import java.sql.SQLException;
-
-import com.dzone.tnas.qsplitter.dao.UserDao;
+import com.dzone.tnas.qsplitter.service.UserService;
 
 public class App {
 	
-    public static void main(String[] args) throws SQLException {
-
-    	var userDao = new UserDao();
-    	userDao.insertRandomCollection(10);
-    	userDao.findAll();
+    public static void main(String[] args) {
+    	var userService = new UserService();
+    	userService.listUsersByIdRange(1, 10000);
     }
 }
