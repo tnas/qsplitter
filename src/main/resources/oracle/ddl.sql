@@ -1,0 +1,9 @@
+CREATE TABLE employee (
+    id NUMBER GENERATED ALWAYS as IDENTITY(START with 1 INCREMENT by 1),
+    name VARCHAR2(500),
+    email VARCHAR2(500),
+    street_name VARCHAR2(500),
+    city VARCHAR2(500),
+    country VARCHAR2(500));
+
+CREATE GLOBAL TEMPORARY TABLE employee_id (emp_id NUMBER) ON COMMIT PRESERVE ROWS;
