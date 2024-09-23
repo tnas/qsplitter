@@ -19,21 +19,26 @@ public class Application {
 	
     public static void main(String[] args) {
     	
-    	var ids = LongStream.rangeClosed(1, 65535).boxed().toList(); 
+    	var ids = LongStream.rangeClosed(1, 100000).boxed().toList(); 
     	
     	var userService = new UserService();
     	
 //    	userService.insertRandomCollection(90000);
     	
     	var start = Instant.now();
-    	userService.findUsersBySplittingIds(ids);
+//    	userService.findUsersBySplittingIds(ids);
     	var end = Instant.now();
     	logger.log(Level.INFO, "Elapsed Time [findUsersBySplittingIds]: {0} milliseconds", Duration.between(start, end).toMillis());
     	
     	start = Instant.now();
-    	userService.findUsersByIdsDisjunctions(ids);
+    	userService.findUsersByDisjunctionsOfInIds(ids);
     	end = Instant.now();
-    	logger.log(Level.INFO, "Elapsed Time [findUsersByIdsDisjunctions]: {0} milliseconds", Duration.between(start, end).toMillis());
+    	logger.log(Level.INFO, "Elapsed Time [findUsersByDisjunctionsOfInIds]: {0} milliseconds", Duration.between(start, end).toMillis());
+    	
+//    	start = Instant.now();
+//    	userService.findUsersByDisjunctionsOfIds(ids);
+//    	end = Instant.now();
+//    	logger.log(Level.INFO, "Elapsed Time [findUsersByDisjunctionsOfIds]: {0} milliseconds", Duration.between(start, end).toMillis());
     	
     	start = Instant.now();
     	userService.findUsersByTempTableOfIds(ids);

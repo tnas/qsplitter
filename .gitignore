@@ -29,3 +29,6 @@ replay_pid*
 .project
 /.mvn
 /.settings
+
+# Critical files
+src/main/resources/oracle/datasource.properties

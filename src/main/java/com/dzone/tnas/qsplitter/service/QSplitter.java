@@ -11,11 +11,36 @@ import java.util.stream.IntStream;
 
 public class QSplitter {
 
-	private static final int MAX_COLLECTION_SIZE = 1000; // ORA-01795
-	private static final int MAX_ELEMENTS_ALL_COLLECTIONS = 65535; // ORA-00913
+	public static final int MAX_ORACLE_IN_CLAUSE_ELEMENTS = 1000; // ORA-01795
+	public static final int MAX_ORACLE_RETRIEVE_ELEMENTS = 65535; // ORA-00913
 
 	public <T> List<List<T>> splitCollection(Collection<T> collection) {
-		return splitCollection(collection, MAX_COLLECTION_SIZE);
+		return splitCollection(collection, MAX_ORACLE_IN_CLAUSE_ELEMENTS);
+	}
+	
+	public <T> List<List<List<T>>> splitAndGroupCollection(Collection<T> collection) {
+		
+		var groupedCollection = new ArrayList<List<List<T>>>();
+		
+		var splittedCollection = splitCollection(collection, MAX_ORACLE_IN_CLAUSE_ELEMENTS);
+		
+		if (collection.size() <= MAX_ORACLE_RETRIEVE_ELEMENTS) {
+			groupedCollection.add(splittedCollection);
+			return groupedCollection;
+		}
+		
+		groupedCollection.add(new ArrayList<>());
+		
+		splittedCollection.stream().forEach(partition -> {
+			
+			if (groupedCollection.getLast().size() * MAX_ORACLE_IN_CLAUSE_ELEMENTS + partition.size() > MAX_ORACLE_RETRIEVE_ELEMENTS) {
+				groupedCollection.add(new ArrayList<>());
+			} 
+			
+			groupedCollection.getLast().add(partition);
+		});
+		
+		return groupedCollection;
 	}
 
 	@SuppressWarnings("unchecked")

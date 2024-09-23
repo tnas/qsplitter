@@ -34,8 +34,12 @@ public class UserService {
 			.toList();
 	}
 	
-	public List<User> findUsersByIdsDisjunctions(List<Long> ids) {
-		return this.dao.findByDisjunctionsOfIds(this.qsplitter.splitCollection(ids));
+	public List<User> findUsersByDisjunctionsOfInIds(List<Long> ids) {
+		return this.dao.findByDisjunctionsOfInIds(this.qsplitter.splitAndGroupCollection(ids));
+	}
+	
+	public List<User> findUsersByDisjunctionsOfIds(List<Long> ids) {
+		return this.dao.findByDisjunctionsOfIds(this.qsplitter.splitCollection(ids, QSplitter.MAX_ORACLE_RETRIEVE_ELEMENTS));
 	}
 	
 	public List<User> findUsersByTempTableOfIds(List<Long> ids) {

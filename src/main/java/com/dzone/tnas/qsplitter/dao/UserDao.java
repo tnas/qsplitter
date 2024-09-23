@@ -40,12 +40,18 @@ public class UserDao {
 				.append(") ORDER BY id")
 				.toString();
 	
-	private Function<List<List<Long>>, String> buildSelectOfDisjunctions = idsList -> 
+	private Function<List<List<Long>>, String> buildSelectOfInDisjunctions = idsList -> 
 		new StringBuilder("SELECT id, name, email, street_name, city, country FROM employee WHERE ")
 				.append(idsList.stream()
 						.map(ids -> new StringBuilder()
 								.append("id IN (").append(ids.stream().map(Object::toString).collect(Collectors.joining(","))).append(")"))
 						.collect(Collectors.joining(" OR ")))
+				.append(" ORDER BY id")
+				.toString();
+		
+	private Function<List<Long>, String> buildSelectOfDisjunctions = ids -> 
+		new StringBuilder("SELECT id, name, email, street_name, city, country FROM employee WHERE ")
+				.append(ids.stream().map(id -> String.format("id = %d", id)).collect(Collectors.joining(" OR ")))
 				.append(" ORDER BY id")
 				.toString();
 			
@@ -108,7 +114,6 @@ public class UserDao {
 		}
 	}
 	
-	
 	public List<User> findByIds(Collection<Long> ids) {
 		
 		try (var stmt = this.getOracleConnection().prepareStatement(buildSimpleSelect.apply(ids))) {
@@ -128,9 +133,9 @@ public class UserDao {
 		}
 	}
 	
-	public List<User> findByDisjunctionsOfIds(List<List<Long>> ids) {
+	public List<User> findByDisjunctionsOfInIdsOld(List<List<Long>> ids) {
 		
-		try (var stmt = this.getOracleConnection().prepareStatement(buildSelectOfDisjunctions.apply(ids))) {
+		try (var stmt = this.getOracleConnection().prepareStatement(buildSelectOfInDisjunctions.apply(ids))) {
 			
 			var users = new ArrayList<User>();
 			
@@ -145,6 +150,50 @@ public class UserDao {
 		} catch (Exception e) {
 			throw new SQLRuntimeException(e);
 		}
+	}
+	
+	public List<User> findByDisjunctionsOfInIds(List<List<List<Long>>> idsList) {
+		
+		var users = new ArrayList<User>();
+		
+		for (var ids : idsList) {
+			
+			try (var stmt = this.getOracleConnection().prepareStatement(buildSelectOfInDisjunctions.apply(ids))) {
+				
+				try (var rs = stmt.executeQuery()) {
+					while (rs.next()) {
+						users.add(new User(rs.getLong(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6)));
+					}
+				}
+				
+			} catch (Exception e) {
+				throw new SQLRuntimeException(e);
+			}
+		}
+		
+		return users;
+	}
+	
+	public List<User> findByDisjunctionsOfIds(List<List<Long>> idsList) {
+		
+		var users = new ArrayList<User>();
+		
+		for (var ids : idsList) {
+			
+			try (var stmt = this.getOracleConnection().prepareStatement(buildSelectOfDisjunctions.apply(ids))) {
+				
+				try (var rs = stmt.executeQuery()) {
+					while (rs.next()) {
+						users.add(new User(rs.getLong(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6)));
+					}
+				}
+				
+			} catch (Exception e) {
+				throw new SQLRuntimeException(e);
+			}
+		}
+		
+		return users;
 	}
 	
 	public List<User> findByTemporaryTableOfIds(List<Long> ids) {
