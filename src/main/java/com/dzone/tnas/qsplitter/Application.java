@@ -2,18 +2,14 @@ package com.dzone.tnas.qsplitter;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
-import java.util.function.BinaryOperator;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
-import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -36,6 +32,12 @@ public class Application {
 			StringUtils.isNumeric(args[0]) && StringUtils.isNumeric(args[1]) &&
 			Integer.parseInt(args[0]) >= 0 && Integer.parseInt(args[0]) <= 3;
 	
+	private static List<String> functionsNames = List.of(
+	   			"findUsersByIsolatedInClauses", 
+	   			"findUsersByDisjunctionsOfInClauses", 
+	   			"findUsersByDisjunctionsOfIds", 
+	   			"findUsersByTempTableOfIds");
+	
     public static void main(String[] arguments) {
 
     	var userService = new UserService();
@@ -45,12 +47,6 @@ public class Application {
     			userService::findUsersByDisjunctionsOfInClauses,
     			userService::findUsersByDisjunctionsOfIds, 
     			userService::findUsersByTempTableOfIds);
-    	
-    	var functionsNames = List.of(
-    			"findUsersByIsolatedInClauses", 
-    			"findUsersByDisjunctionsOfInClauses", 
-    			"findUsersByDisjunctionsOfIds", 
-    			"findUsersByTempTableOfIds");
     	
     	BiConsumer<Integer, Integer> traceFindFunction = (index, numOfIds) -> {
     		var ids = LongStream.rangeClosed(1, numOfIds).boxed().toList();

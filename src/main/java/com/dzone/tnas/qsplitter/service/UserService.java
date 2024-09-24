@@ -31,15 +31,8 @@ public class UserService {
 	}
 	
 	public List<User> findUsersByIsolatedInClauses(List<Long> ids) {
-		
 		var users = new ArrayList<User>();
-		
-		this.qsplitter
-			.splitCollection(ids)
-			.stream()
-			.map(this.dao::findByIds)
-			.forEach(users::addAll);
-		
+		this.qsplitter.splitCollection(ids).stream().map(this.dao::findByIds).forEach(users::addAll);
 		return users;
 	}
 	
