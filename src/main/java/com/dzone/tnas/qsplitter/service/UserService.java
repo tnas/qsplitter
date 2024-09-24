@@ -1,13 +1,18 @@
 package com.dzone.tnas.qsplitter.service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.dzone.tnas.qsplitter.dao.UserDao;
 import com.dzone.tnas.qsplitter.model.User;
 
 public class UserService {
 
+	private static final Logger logger = Logger.getLogger(UserService.class.getName());
+	
 	private QSplitter qsplitter;
 	
 	private UserDao dao;
@@ -25,17 +30,21 @@ public class UserService {
 		return this.dao.findByIds(ids);
 	}
 	
-	public List<User> findUsersBySplittingIds(List<Long> ids) {
-		return this.qsplitter
+	public List<User> findUsersByIsolatedInClauses(List<Long> ids) {
+		
+		var users = new ArrayList<User>();
+		
+		this.qsplitter
 			.splitCollection(ids)
 			.stream()
 			.map(this.dao::findByIds)
-			.flatMap(Collection::stream)
-			.toList();
+			.forEach(users::addAll);
+		
+		return users;
 	}
 	
-	public List<User> findUsersByDisjunctionsOfInIds(List<Long> ids) {
-		return this.dao.findByDisjunctionsOfInIds(this.qsplitter.splitAndGroupCollection(ids));
+	public List<User> findUsersByDisjunctionsOfInClauses(List<Long> ids) {
+		return this.dao.findByDisjunctionsOfInClauses(this.qsplitter.splitAndGroupCollection(ids));
 	}
 	
 	public List<User> findUsersByDisjunctionsOfIds(List<Long> ids) {
@@ -47,6 +56,6 @@ public class UserService {
 	}
 	
 	public void printUsers(Collection<User> users) {
-		users.stream().forEach(System.out::println);
+		users.stream().forEach(u -> logger.log(Level.INFO, u.toString()));
 	}
 }

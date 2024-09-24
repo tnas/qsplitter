@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Properties;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -21,6 +23,8 @@ import com.github.javafaker.Faker;
 
 public class UserDao {
 
+	private static final Logger logger = Logger.getLogger(UserDao.class.getName());
+	
 	private Properties datasource;
 	
 	public UserDao() {
@@ -29,7 +33,17 @@ public class UserDao {
 			this.datasource = new Properties();
 			this.datasource.load(input);
 		} catch (IOException e) {
-			throw new IORuntimeException(e);
+			
+			logger.log(Level.SEVERE, e.getMessage());
+			logger.log(Level.INFO, "Trying to load datasource properties from oracle/datasource.properties");
+			
+			try (var input = getClass().getClassLoader().getResourceAsStream("oracle/datasource.properties")) {
+				this.datasource = new Properties();
+				this.datasource.load(input);
+				Class.forName("oracle.jdbc.OracleDriver");
+			} catch (IOException | ClassNotFoundException ex) {
+				throw new IORuntimeException(ex);
+			}
 		}
 	}
 	
@@ -69,17 +83,16 @@ public class UserDao {
 	
 		var insertQuery = "INSERT INTO employee(name, email, street_name, city, country) VALUES(?, ?, ?, ?, ?)";
 		
-		try (var conn = this.getOracleConnection()) {
+		try (var stmt = this.getOracleConnection().prepareStatement(insertQuery)) {
 			
-			Consumer<User> persistUser = user -> {
-				
-				try (var stmt = conn.prepareStatement(insertQuery)) {
+			Consumer<User> addBatchUser = user -> {
+				try {
 					stmt.setString(1, user.name());
 					stmt.setString(2, user.email());
 					stmt.setString(3, user.streetName());
 					stmt.setString(4, user.city());
 					stmt.setString(5, user.country());
-					stmt.execute();
+					stmt.addBatch();
 				} catch (SQLException ex) {
 					throw new SQLRuntimeException(ex);
 				}
@@ -88,9 +101,12 @@ public class UserDao {
 			var faker = new Faker();
 			
 			IntStream.range(0, size)
-			.mapToObj(i -> new User(null, faker.name().fullName(), faker.internet().emailAddress(), 
-					faker.address().streetName(), faker.address().cityName(), faker.country().name()))
-			.forEach(persistUser);
+				.mapToObj(i -> new User(null, faker.name().fullName(), faker.internet().emailAddress(), 
+						faker.address().streetName(), faker.address().cityName(), faker.country().name()))
+				.forEach(addBatchUser);
+			
+			stmt.executeBatch();
+			
 		} catch (Exception e) {
 			throw new SQLRuntimeException(e);
 		}
@@ -133,26 +149,7 @@ public class UserDao {
 		}
 	}
 	
-	public List<User> findByDisjunctionsOfInIdsOld(List<List<Long>> ids) {
-		
-		try (var stmt = this.getOracleConnection().prepareStatement(buildSelectOfInDisjunctions.apply(ids))) {
-			
-			var users = new ArrayList<User>();
-			
-			try (var rs = stmt.executeQuery()) {
-				while (rs.next()) {
-					users.add(new User(rs.getLong(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6)));
-				}
-			}
-			
-			return users;
-			
-		} catch (Exception e) {
-			throw new SQLRuntimeException(e);
-		}
-	}
-	
-	public List<User> findByDisjunctionsOfInIds(List<List<List<Long>>> idsList) {
+	public List<User> findByDisjunctionsOfInClauses(List<List<List<Long>>> idsList) {
 		
 		var users = new ArrayList<User>();
 		
