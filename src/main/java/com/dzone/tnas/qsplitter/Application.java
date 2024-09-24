@@ -2,12 +2,18 @@ package com.dzone.tnas.qsplitter;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.BinaryOperator;
+import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -25,7 +31,12 @@ public class Application {
 	
 	private static final int DEFAULT_NUM_OF_IDS = 10000;
 	
-    public static void main(String[] args) {
+	private static Predicate<String[]> isArgsValid = args ->
+			args.length == 2 && 
+			StringUtils.isNumeric(args[0]) && StringUtils.isNumeric(args[1]) &&
+			Integer.parseInt(args[0]) >= 0 && Integer.parseInt(args[0]) <= 3;
+	
+    public static void main(String[] arguments) {
 
     	var userService = new UserService();
     	
@@ -41,32 +52,19 @@ public class Application {
     			"findUsersByDisjunctionsOfIds", 
     			"findUsersByTempTableOfIds");
     	
-    	if (args.length < 2 || !StringUtils.isNumeric(args[0]) || !StringUtils.isNumeric(args[1]) 
-    			|| Integer.valueOf(args[0]) < 0 || Integer.valueOf(args[0]) > 3) {
-    		
-    		var ids = LongStream.rangeClosed(1, DEFAULT_NUM_OF_IDS).boxed().toList();
-    		
-    		IntStream.range(0, findFunctions.size()).forEach(index -> {
-    			var start = Instant.now();
-    			var users = findFunctions.get(index).apply(ids);
-    			var end = Instant.now();
-    			var params = new Object[] { functionsNames.get(index), Duration.between(start, end).toMillis(), users.size() };
-    			logger.log(Level.INFO, "Elapsed Time [{0}]: {1} milliseconds for {2} users", params);
-    		});
-    	} else {
-    		
-    		var index = Integer.parseInt(args[0]);
-    		var numOfIds = Integer.parseInt(args[1]);
+    	BiConsumer<Integer, Integer> traceFindFunction = (index, numOfIds) -> {
     		var ids = LongStream.rangeClosed(1, numOfIds).boxed().toList();
-    		
-    		var start = Instant.now();
+	    	var start = Instant.now();
 			var users = findFunctions.get(index).apply(ids);
 			var end = Instant.now();
 			var params = new Object[] { functionsNames.get(index), Duration.between(start, end).toMillis(), users.size() };
 			logger.log(Level.INFO, "Elapsed Time [{0}]: {1} milliseconds for {2} users", params);
+    	};
+    	
+    	if (isArgsValid.test(arguments)) {
+    		traceFindFunction.accept(Integer.parseInt(arguments[0]), Integer.parseInt(arguments[1]));
+    	} else {
+    		IntStream.range(0, findFunctions.size()).forEach(index -> traceFindFunction.accept(index, DEFAULT_NUM_OF_IDS));
     	}
-    	
-    	
-    	
     }
 }
