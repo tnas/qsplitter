@@ -57,6 +57,6 @@ public class UserService {
 	}
 	
 	public List<User> findUsersByMultiValueInClause(List<Long> ids) {
-		return this.dao.findByMultiValueIn(ids);
+		return this.dao.findByMultiValueIn(this.qsplitter.splitCollection(ids, QSplitter.MAX_ORACLE_RETRIEVE_ELEMENTS));
 	}
 }

@@ -262,23 +262,26 @@ public class UserDao {
 		}
 	}
 	
-	public List<User> findByMultiValueIn(List<Long> ids) {
+	public List<User> findByMultiValueIn(List<List<Long>> idsList) {
 		
-		try (var stmt = this.getOracleConnection().prepareStatement(buildSelectMultiValueIn.apply(ids))) {
+		var users = new ArrayList<User>();
+		
+		for (var ids : idsList) {
 			
-			var users = new ArrayList<User>();
-			
-			try (var rs = stmt.executeQuery()) {
-				while (rs.next()) {
-					users.add(new User(rs.getLong(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6)));
+			try (var stmt = this.getOracleConnection().prepareStatement(buildSelectMultiValueIn.apply(ids))) {
+				
+				try (var rs = stmt.executeQuery()) {
+					while (rs.next()) {
+						users.add(new User(rs.getLong(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6)));
+					}
 				}
+				
+			} catch (Exception e) {
+				throw new SQLRuntimeException(e);
 			}
-			
-			return users;
-			
-		} catch (Exception e) {
-			throw new SQLRuntimeException(e);
 		}
+		
+		return users;
 	}
 	
 }
