@@ -26,6 +26,10 @@ public class UserService {
 		this.dao.insertRandomCollection(size);
 	}
 	
+	public void printUsers(Collection<User> users) {
+		users.stream().forEach(u -> logger.log(Level.INFO, u.toString()));
+	}
+	
 	public List<User> findUsersByIds(List<Long> ids) {
 		return this.dao.findByIds(ids);
 	}
@@ -52,7 +56,7 @@ public class UserService {
 		return this.dao.findByUnionAll(this.qsplitter.splitCollection(ids));
 	}
 	
-	public void printUsers(Collection<User> users) {
-		users.stream().forEach(u -> logger.log(Level.INFO, u.toString()));
+	public List<User> findUsersByMultiValueInClause(List<Long> ids) {
+		return this.dao.findByMultiValueIn(ids);
 	}
 }

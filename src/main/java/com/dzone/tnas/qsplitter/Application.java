@@ -31,14 +31,15 @@ public class Application {
 	private static Predicate<String[]> isArgsValid = args ->
 			args.length == 2 && 
 			StringUtils.isNumeric(args[0]) && StringUtils.isNumeric(args[1]) &&
-			Integer.parseInt(args[0]) >= 0 && Integer.parseInt(args[0]) <= 4;
+			Integer.parseInt(args[0]) >= 0 && Integer.parseInt(args[0]) <= 5;
 	
 	private static List<String> functionsNames = List.of(
 	   			"findUsersByIsolatedInClauses", 
 	   			"findUsersByDisjunctionsOfInClauses", 
 	   			"findUsersByDisjunctionsOfIds", 
 	   			"findUsersByTempTableOfIds",
-	   			"findUsersByUnionAll");
+	   			"findUsersByUnionAll",
+				"findUsersByMultiValueInClause");
 	
     public static void main(String[] arguments) {
 
@@ -50,7 +51,8 @@ public class Application {
     			userService::findUsersByDisjunctionsOfInClauses,
     			userService::findUsersByDisjunctionsOfIds, 
     			userService::findUsersByTempTableOfIds,
-    			userService::findUsersByUnionAll);
+    			userService::findUsersByUnionAll,
+    			userService::findUsersByMultiValueInClause);
     	
     	BiConsumer<Integer, Integer> traceFindFunction = (index, numOfIds) -> {
     		var ids = LongStream.rangeClosed(1, numOfIds).boxed().toList();

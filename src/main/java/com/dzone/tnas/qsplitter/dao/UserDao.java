@@ -26,6 +26,7 @@ import com.github.javafaker.Faker;
 public class UserDao {
 
 	private static final Logger logger = Logger.getLogger(UserDao.class.getName());
+	private static final String ORDER_BY_ID = " ORDER BY id";
 	
 	private Properties datasource;
 	
@@ -49,11 +50,11 @@ public class UserDao {
 		}
 	}
 	
-	private Function<Collection<Long>, String> buildSimpleSelect = ids -> 
+	private Function<Collection<Long>, String> buildSimpleSelectIn = ids -> 
 			new StringBuilder()
 				.append("SELECT id, name, email, street_name, city, country FROM employee WHERE id IN (")
 				.append(ids.stream().map(Object::toString).collect(Collectors.joining(",")))
-				.append(") ORDER BY id")
+				.append(")").append(ORDER_BY_ID)
 				.toString();
 	
 	private Function<List<List<Long>>, String> buildSelectOfInDisjunctions = idsList -> 
@@ -62,15 +63,23 @@ public class UserDao {
 						.map(ids -> new StringBuilder()
 								.append("id IN (").append(ids.stream().map(Object::toString).collect(Collectors.joining(","))).append(")"))
 						.collect(Collectors.joining(" OR ")))
-				.append(" ORDER BY id")
+				.append(ORDER_BY_ID)
 				.toString();
 		
 	private Function<List<Long>, String> buildSelectOfDisjunctions = ids -> 
 		new StringBuilder("SELECT id, name, email, street_name, city, country FROM employee WHERE ")
 				.append(ids.stream().map(id -> String.format("id = %d", id)).collect(Collectors.joining(" OR ")))
-				.append(" ORDER BY id")
+				.append(ORDER_BY_ID)
 				.toString();
-			
+	
+	private Function<Collection<Long>, String> buildSelectMultiValueIn = ids -> 
+		new StringBuilder()
+			.append("SELECT id, name, email, street_name, city, country FROM employee WHERE ('nil', id) IN (")
+			.append(ids.stream().map(id -> String.format("('nil', %d)", id)).collect(Collectors.joining(",")))
+			.append(")")
+			.append(ORDER_BY_ID)
+			.toString();
+		
 	@SuppressWarnings("unused")
 	private Connection getHsqldbConnection() throws SQLException {
 		return DriverManager.getConnection("jdbc:hsqldb:file:src/main/resources/hsqldb/qsplitter", "dzone", "dzone");
@@ -134,7 +143,7 @@ public class UserDao {
 	
 	public List<User> findByIds(Collection<Long> ids) {
 		
-		try (var stmt = this.getOracleConnection().prepareStatement(buildSimpleSelect.apply(ids))) {
+		try (var stmt = this.getOracleConnection().prepareStatement(buildSimpleSelectIn.apply(ids))) {
 			
 			var users = new ArrayList<User>();
 			
@@ -231,12 +240,31 @@ public class UserDao {
 		
 		var query = idsList
 				.stream()
-				.map(buildSimpleSelect)
-				.map(q -> StringUtils.removeEnd(q, " ORDER BY id"))
+				.map(buildSimpleSelectIn)
+				.map(q -> StringUtils.removeEnd(q, ORDER_BY_ID))
 				.collect(Collectors.joining(" UNION ALL "))
-				.concat(" ORDER BY id");
+				.concat(ORDER_BY_ID);
 		
 		try (var stmt = this.getOracleConnection().prepareStatement(query)) {
+			
+			var users = new ArrayList<User>();
+			
+			try (var rs = stmt.executeQuery()) {
+				while (rs.next()) {
+					users.add(new User(rs.getLong(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6)));
+				}
+			}
+			
+			return users;
+			
+		} catch (Exception e) {
+			throw new SQLRuntimeException(e);
+		}
+	}
+	
+	public List<User> findByMultiValueIn(List<Long> ids) {
+		
+		try (var stmt = this.getOracleConnection().prepareStatement(buildSelectMultiValueIn.apply(ids))) {
 			
 			var users = new ArrayList<User>();
 			
