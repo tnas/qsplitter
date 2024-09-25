@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -128,13 +129,8 @@ public class UserDao {
 		var selectQuery = "SELECT id, name, email, street_name, city, country FROM employee ORDER BY id";
 		
 		try (var rs = this.getOracleConnection().createStatement().executeQuery(selectQuery)) {
-			
 			var users = new ArrayList<User>();
-			
-			while (rs.next()) {
-				users.add(new User(rs.getLong(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6)));
-			}
-			
+			this.resultSetToUsers(rs, users);
 			return users;
 		} catch (Exception e) {
 			throw new SQLRuntimeException(e);
@@ -143,18 +139,10 @@ public class UserDao {
 	
 	public List<User> findByIds(Collection<Long> ids) {
 		
-		try (var stmt = this.getOracleConnection().prepareStatement(buildSimpleSelectIn.apply(ids))) {
-			
+		try (var rs = this.getOracleConnection().prepareStatement(buildSimpleSelectIn.apply(ids)).executeQuery()) {
 			var users = new ArrayList<User>();
-			
-			try (var rs = stmt.executeQuery()) {
-				while (rs.next()) {
-					users.add(new User(rs.getLong(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6)));
-				}
-			}
-			
+			this.resultSetToUsers(rs, users);
 			return users;
-			
 		} catch (Exception e) {
 			throw new SQLRuntimeException(e);
 		}
@@ -164,41 +152,36 @@ public class UserDao {
 		
 		var users = new ArrayList<User>();
 		
-		for (var ids : idsList) {
+		try (var conn = this.getOracleConnection()) {
 			
-			try (var stmt = this.getOracleConnection().prepareStatement(buildSelectOfInDisjunctions.apply(ids))) {
+			for (var ids : idsList) {
 				
-				try (var rs = stmt.executeQuery()) {
-					while (rs.next()) {
-						users.add(new User(rs.getLong(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6)));
-					}
-				}
-				
-			} catch (Exception e) {
-				throw new SQLRuntimeException(e);
+				try (var rs = conn.prepareStatement(buildSelectOfInDisjunctions.apply(ids)).executeQuery()) {
+					this.resultSetToUsers(rs, users);
+				} 
 			}
+		} catch (Exception e) {
+			throw new SQLRuntimeException(e);
 		}
 		
 		return users;
+		
 	}
 	
 	public List<User> findByDisjunctionsOfIds(List<List<Long>> idsList) {
 		
 		var users = new ArrayList<User>();
 		
-		for (var ids : idsList) {
+		try (var conn = this.getOracleConnection()) {
 			
-			try (var stmt = this.getOracleConnection().prepareStatement(buildSelectOfDisjunctions.apply(ids))) {
+			for (var ids : idsList) {
 				
-				try (var rs = stmt.executeQuery()) {
-					while (rs.next()) {
-						users.add(new User(rs.getLong(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6)));
-					}
-				}
-				
-			} catch (Exception e) {
-				throw new SQLRuntimeException(e);
+				try (var rs = conn.prepareStatement(buildSelectOfDisjunctions.apply(ids)).executeQuery()) {
+					this.resultSetToUsers(rs, users);
+				} 
 			}
+		} catch (Exception e) {
+			throw new SQLRuntimeException(e);
 		}
 		
 		return users;
@@ -224,9 +207,7 @@ public class UserDao {
 			var users = new ArrayList<User>();
 			
 			try (var rs = conn.prepareStatement(querySelectUsers).executeQuery()) {
-				while (rs.next()) {
-					users.add(new User(rs.getLong(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6)));
-				}
+				this.resultSetToUsers(rs, users);
 			}
 			
 			return users;
@@ -245,18 +226,10 @@ public class UserDao {
 				.collect(Collectors.joining(" UNION ALL "))
 				.concat(ORDER_BY_ID);
 		
-		try (var stmt = this.getOracleConnection().prepareStatement(query)) {
-			
+		try (var rs = this.getOracleConnection().prepareStatement(query).executeQuery()) {
 			var users = new ArrayList<User>();
-			
-			try (var rs = stmt.executeQuery()) {
-				while (rs.next()) {
-					users.add(new User(rs.getLong(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6)));
-				}
-			}
-			
+			this.resultSetToUsers(rs, users);
 			return users;
-			
 		} catch (Exception e) {
 			throw new SQLRuntimeException(e);
 		}
@@ -266,22 +239,26 @@ public class UserDao {
 		
 		var users = new ArrayList<User>();
 		
-		for (var ids : idsList) {
+		try (var conn = this.getOracleConnection()) {
 			
-			try (var stmt = this.getOracleConnection().prepareStatement(buildSelectMultiValueIn.apply(ids))) {
+			for (var ids : idsList) {
 				
-				try (var rs = stmt.executeQuery()) {
-					while (rs.next()) {
-						users.add(new User(rs.getLong(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6)));
-					}
-				}
+				try (var rs = conn.prepareStatement(buildSelectMultiValueIn.apply(ids)).executeQuery()) {
 				
-			} catch (Exception e) {
-				throw new SQLRuntimeException(e);
+					this.resultSetToUsers(rs, users);
+				} 
 			}
+		} catch (Exception e) {
+			throw new SQLRuntimeException(e);
 		}
 		
 		return users;
+	}
+	
+	private void resultSetToUsers(ResultSet rs, List<User> users) throws SQLException {
+		while (rs.next()) {
+			users.add(new User(rs.getLong(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6)));
+		}
 	}
 	
 }
