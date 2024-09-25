@@ -48,6 +48,10 @@ public class UserService {
 		return this.dao.findByTemporaryTableOfIds(ids);
 	}
 	
+	public List<User> findUsersByUnionAll(List<Long> ids) {
+		return this.dao.findByUnionAll(this.qsplitter.splitCollection(ids));
+	}
+	
 	public void printUsers(Collection<User> users) {
 		users.stream().forEach(u -> logger.log(Level.INFO, u.toString()));
 	}

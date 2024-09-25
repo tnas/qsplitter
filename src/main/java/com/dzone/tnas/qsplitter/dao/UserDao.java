@@ -16,6 +16,8 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.dzone.tnas.qsplitter.exception.IORuntimeException;
 import com.dzone.tnas.qsplitter.exception.SQLRuntimeException;
 import com.dzone.tnas.qsplitter.model.User;
@@ -213,6 +215,32 @@ public class UserDao {
 			var users = new ArrayList<User>();
 			
 			try (var rs = conn.prepareStatement(querySelectUsers).executeQuery()) {
+				while (rs.next()) {
+					users.add(new User(rs.getLong(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6)));
+				}
+			}
+			
+			return users;
+			
+		} catch (Exception e) {
+			throw new SQLRuntimeException(e);
+		}
+	}
+	
+	public List<User> findByUnionAll(List<List<Long>> idsList) {
+		
+		var query = idsList
+				.stream()
+				.map(buildSimpleSelect)
+				.map(q -> StringUtils.removeEnd(q, " ORDER BY id"))
+				.collect(Collectors.joining(" UNION ALL "))
+				.concat(" ORDER BY id");
+		
+		try (var stmt = this.getOracleConnection().prepareStatement(query)) {
+			
+			var users = new ArrayList<User>();
+			
+			try (var rs = stmt.executeQuery()) {
 				while (rs.next()) {
 					users.add(new User(rs.getLong(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6)));
 				}
