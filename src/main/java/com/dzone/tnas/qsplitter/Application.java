@@ -14,6 +14,7 @@ import java.util.stream.LongStream;
 import org.apache.commons.lang3.StringUtils;
 
 import com.dzone.tnas.qsplitter.model.User;
+import com.dzone.tnas.qsplitter.service.Tracer;
 import com.dzone.tnas.qsplitter.service.UserService;
 
 /**
@@ -41,6 +42,7 @@ public class Application {
     public static void main(String[] arguments) {
 
     	var userService = new UserService();
+    	var tracer = new Tracer();
     	
     	List<Function<List<Long>, List<User>>> findFunctions = List.of(
     			userService::findUsersByIsolatedInClauses,
@@ -52,14 +54,16 @@ public class Application {
     		var ids = LongStream.rangeClosed(1, numOfIds).boxed().toList();
 	    	var start = Instant.now();
 			var users = findFunctions.get(index).apply(ids);
-			var end = Instant.now();
-			var params = new Object[] { functionsNames.get(index), Duration.between(start, end).toMillis(), users.size() };
+			var elapsedTime = Duration.between(start, Instant.now()).toMillis();
+			var params = new Object[] { functionsNames.get(index), elapsedTime, users.size() };
 			logger.log(Level.INFO, "Elapsed Time [{0}]: {1} milliseconds for {2} users", params);
+			tracer.traceInFile(functionsNames.get(index), numOfIds, elapsedTime);
     	};
     	
     	if (isArgsValid.test(arguments)) {
     		traceFindFunction.accept(Integer.parseInt(arguments[0]), Integer.parseInt(arguments[1]));
     	} else {
+    		logger.log(Level.WARNING, "Invalid argments. Running default set of tests.");
     		IntStream.range(0, findFunctions.size()).forEach(index -> traceFindFunction.accept(index, DEFAULT_NUM_OF_IDS));
     	}
     }
