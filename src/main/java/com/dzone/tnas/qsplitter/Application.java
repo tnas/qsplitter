@@ -34,7 +34,7 @@ public class Application {
 			Integer.parseInt(args[0]) >= 0 && Integer.parseInt(args[0]) <= 5;
 	
 	private static List<String> functionsNames = List.of(
-	   			"findUsersByIsolatedInClauses", 
+	   			"findUsersByNQuery",
 	   			"findUsersByDisjunctionsOfInClauses", 
 	   			"findUsersByDisjunctionsOfIds", 
 	   			"findUsersByTempTableOfIds",
@@ -47,7 +47,7 @@ public class Application {
     	var tracer = new Tracer();
     	
     	List<Function<List<Long>, List<User>>> findFunctions = List.of(
-    			userService::findUsersByIsolatedInClauses,
+    			userService::findUsersByNQuery,
     			userService::findUsersByDisjunctionsOfInClauses,
     			userService::findUsersByDisjunctionsOfIds, 
     			userService::findUsersByTempTableOfIds,

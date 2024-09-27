@@ -29,7 +29,7 @@ class UserServiceTest {
     void shouldAnswerWithTrue(int numOfIds) {
     	var ids = LongStream.rangeClosed(1, numOfIds).boxed().toList();
     	var start = Instant.now();
-    	userService.findUsersByIsolatedInClauses(ids);
+    	userService.findUsersByNQuery(ids);
     	var end = Instant.now();
     	logger.log(Level.INFO, "Elapsed Time [findUsersBySplittingIds]: {0} milliseconds", Duration.between(start, end).toMillis());
     }

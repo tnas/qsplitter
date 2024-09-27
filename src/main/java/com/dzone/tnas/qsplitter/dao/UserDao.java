@@ -86,7 +86,7 @@ public class UserDao {
 		return DriverManager.getConnection("jdbc:hsqldb:file:src/main/resources/hsqldb/qsplitter", "dzone", "dzone");
 	}
 	
-	private Connection getOracleConnection() throws SQLException {
+	private Connection getConnection() throws SQLException {
 		return DriverManager.getConnection(this.datasource.getProperty("db.url"), 
 				this.datasource.getProperty("db.user"), this.datasource.getProperty("db.password"));
 	}
@@ -95,7 +95,7 @@ public class UserDao {
 	
 		var insertQuery = "INSERT INTO employee(name, email, street_name, city, country) VALUES(?, ?, ?, ?, ?)";
 		
-		try (var stmt = this.getOracleConnection().prepareStatement(insertQuery)) {
+		try (var stmt = this.getConnection().prepareStatement(insertQuery)) {
 			
 			Consumer<User> addBatchUser = user -> {
 				try {
@@ -128,7 +128,7 @@ public class UserDao {
 		
 		var selectQuery = "SELECT id, name, email, street_name, city, country FROM employee ORDER BY id";
 		
-		try (var rs = this.getOracleConnection().createStatement().executeQuery(selectQuery)) {
+		try (var rs = this.getConnection().createStatement().executeQuery(selectQuery)) {
 			var users = new ArrayList<User>();
 			this.resultSetToUsers(rs, users);
 			return users;
@@ -139,7 +139,7 @@ public class UserDao {
 	
 	public List<User> findByIds(Collection<Long> ids) {
 		
-		try (var rs = this.getOracleConnection().prepareStatement(buildSimpleSelectIn.apply(ids)).executeQuery()) {
+		try (var rs = this.getConnection().prepareStatement(buildSimpleSelectIn.apply(ids)).executeQuery()) {
 			var users = new ArrayList<User>();
 			this.resultSetToUsers(rs, users);
 			return users;
@@ -152,7 +152,7 @@ public class UserDao {
 		
 		var users = new ArrayList<User>();
 		
-		try (var conn = this.getOracleConnection()) {
+		try (var conn = this.getConnection()) {
 			
 			for (var ids : idsList) {
 				
@@ -172,7 +172,7 @@ public class UserDao {
 		
 		var users = new ArrayList<User>();
 		
-		try (var conn = this.getOracleConnection()) {
+		try (var conn = this.getConnection()) {
 			
 			for (var ids : idsList) {
 				
@@ -192,7 +192,7 @@ public class UserDao {
 		var queryInsertTempTable = "INSERT INTO employee_id (emp_id) VALUES (?)";
 		var querySelectUsers = "SELECT id, name, email, street_name, city, country FROM employee JOIN employee_id ON id = emp_id ORDER BY id";
 		
-		try (var conn = this.getOracleConnection()) {
+		try (var conn = this.getConnection()) {
 			
 			try (var pstmt = conn.prepareStatement(queryInsertTempTable)) {
 				
@@ -226,7 +226,7 @@ public class UserDao {
 				.collect(Collectors.joining(" UNION ALL "))
 				.concat(ORDER_BY_ID);
 		
-		try (var rs = this.getOracleConnection().prepareStatement(query).executeQuery()) {
+		try (var rs = this.getConnection().prepareStatement(query).executeQuery()) {
 			var users = new ArrayList<User>();
 			this.resultSetToUsers(rs, users);
 			return users;
@@ -239,7 +239,7 @@ public class UserDao {
 		
 		var users = new ArrayList<User>();
 		
-		try (var conn = this.getOracleConnection()) {
+		try (var conn = this.getConnection()) {
 			
 			for (var ids : idsList) {
 				

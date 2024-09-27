@@ -13,13 +13,13 @@ public class UserService {
 
 	private static final Logger logger = Logger.getLogger(UserService.class.getName());
 	
-	private QSplitter qsplitter;
+	private final QSplitter<Long> qsplitter;
 	
-	private UserDao dao;
+	private final UserDao dao;
 	
 	public UserService() {
 		this.dao = new UserDao();
-		this.qsplitter = new QSplitter();
+		this.qsplitter = new QSplitter<>();
 	}
 	
 	public void insertRandomCollection(int size) {
@@ -34,7 +34,7 @@ public class UserService {
 		return this.dao.findByIds(ids);
 	}
 	
-	public List<User> findUsersByIsolatedInClauses(List<Long> ids) {
+	public List<User> findUsersByNQuery(List<Long> ids) {
 		var users = new ArrayList<User>();
 		this.qsplitter.splitCollection(ids).stream().map(this.dao::findByIds).forEach(users::addAll);
 		return users;
