@@ -58,7 +58,7 @@ public class UserDao {
 				.append(")").append(ORDER_BY_ID)
 				.toString();
 	
-	private Function<List<List<Long>>, String> buildSelectOfInDisjunctions = idsList -> 
+	private Function<List<List<Long>>, String> buildSelectDisjunctions = idsList -> 
 		new StringBuilder("SELECT id, name, email, street_name, city, country FROM employee WHERE ")
 				.append(idsList.stream()
 						.map(ids -> new StringBuilder()
@@ -73,7 +73,7 @@ public class UserDao {
 				.append(ORDER_BY_ID)
 				.toString();
 	
-	private Function<Collection<Long>, String> buildSelectMultiValueIn = ids -> 
+	private Function<Collection<Long>, String> buildSelectTuples = ids -> 
 		new StringBuilder()
 			.append("SELECT id, name, email, street_name, city, country FROM employee WHERE ('nil', id) IN (")
 			.append(ids.stream().map(id -> String.format("('nil', %d)", id)).collect(Collectors.joining(",")))
@@ -148,7 +148,7 @@ public class UserDao {
 		}
 	}
 	
-	public List<User> findByDisjunctionsOfInClauses(List<List<List<Long>>> idsList) {
+	public List<User> findByDisjunctionsOfExpressionLists(List<List<List<Long>>> idsList) {
 		
 		var users = new ArrayList<User>();
 		
@@ -156,7 +156,7 @@ public class UserDao {
 			
 			for (var ids : idsList) {
 				
-				try (var rs = conn.prepareStatement(buildSelectOfInDisjunctions.apply(ids)).executeQuery()) {
+				try (var rs = conn.prepareStatement(buildSelectDisjunctions.apply(ids)).executeQuery()) {
 					this.resultSetToUsers(rs, users);
 				} 
 			}
@@ -187,10 +187,13 @@ public class UserDao {
 		return users;
 	}
 	
-	public List<User> findByTemporaryTableOfIds(List<Long> ids) {
+	public List<User> findByTemporaryTable(List<Long> ids) {
 		
 		var queryInsertTempTable = "INSERT INTO employee_id (emp_id) VALUES (?)";
-		var querySelectUsers = "SELECT id, name, email, street_name, city, country FROM employee JOIN employee_id ON id = emp_id ORDER BY id";
+		var querySelectUsers = """
+				SELECT id, name, email, street_name, city, country 
+				FROM employee JOIN employee_id ON id = emp_id ORDER BY id
+				""";
 		
 		try (var conn = this.getConnection()) {
 			
@@ -235,7 +238,7 @@ public class UserDao {
 		}
 	}
 	
-	public List<User> findByMultiValueIn(List<List<Long>> idsList) {
+	public List<User> findByTuples(List<List<Long>> idsList) {
 		
 		var users = new ArrayList<User>();
 		
@@ -243,7 +246,7 @@ public class UserDao {
 			
 			for (var ids : idsList) {
 				
-				try (var rs = conn.prepareStatement(buildSelectMultiValueIn.apply(ids)).executeQuery()) {
+				try (var rs = conn.prepareStatement(buildSelectTuples.apply(ids)).executeQuery()) {
 				
 					this.resultSetToUsers(rs, users);
 				} 

@@ -40,23 +40,23 @@ public class UserService {
 		return users;
 	}
 	
-	public List<User> findUsersByDisjunctionsOfInClauses(List<Long> ids) {
-		return this.dao.findByDisjunctionsOfInClauses(this.qsplitter.splitAndGroupCollection(ids));
+	public List<User> findUsersByDisjunctionsOfExpressionLists(List<Long> ids) {
+		return this.dao.findByDisjunctionsOfExpressionLists(this.qsplitter.splitAndGroupCollection(ids));
 	}
 	
 	public List<User> findUsersByDisjunctionsOfIds(List<Long> ids) {
 		return this.dao.findByDisjunctionsOfIds(this.qsplitter.splitCollection(ids, QSplitter.MAX_ORACLE_RETRIEVE_ELEMENTS));
 	}
 	
-	public List<User> findUsersByTempTableOfIds(List<Long> ids) {
-		return this.dao.findByTemporaryTableOfIds(ids);
+	public List<User> findUsersByTempTable(List<Long> ids) {
+		return this.dao.findByTemporaryTable(ids);
 	}
 	
 	public List<User> findUsersByUnionAll(List<Long> ids) {
 		return this.dao.findByUnionAll(this.qsplitter.splitCollection(ids));
 	}
 	
-	public List<User> findUsersByMultiValueInClause(List<Long> ids) {
-		return this.dao.findByMultiValueIn(this.qsplitter.splitCollection(ids, QSplitter.MAX_ORACLE_RETRIEVE_ELEMENTS));
+	public List<User> findUsersByTuples(List<Long> ids) {
+		return this.dao.findByTuples(this.qsplitter.splitCollection(ids, QSplitter.MAX_ORACLE_RETRIEVE_ELEMENTS));
 	}
 }

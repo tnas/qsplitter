@@ -35,11 +35,11 @@ public class Application {
 	
 	private static List<String> functionsNames = List.of(
 	   			"findUsersByNQuery",
-	   			"findUsersByDisjunctionsOfInClauses", 
+	   			"findUsersByDisjunctionsOfExpressionLists", 
 	   			"findUsersByDisjunctionsOfIds", 
-	   			"findUsersByTempTableOfIds",
+	   			"findUsersByTempTable",
 	   			"findUsersByUnionAll",
-				"findUsersByMultiValueInClause");
+				"findUsersByTuples");
 	
     public static void main(String[] arguments) {
 
@@ -48,11 +48,11 @@ public class Application {
     	
     	List<Function<List<Long>, List<User>>> findFunctions = List.of(
     			userService::findUsersByNQuery,
-    			userService::findUsersByDisjunctionsOfInClauses,
+    			userService::findUsersByDisjunctionsOfExpressionLists,
     			userService::findUsersByDisjunctionsOfIds, 
-    			userService::findUsersByTempTableOfIds,
+    			userService::findUsersByTempTable,
     			userService::findUsersByUnionAll,
-    			userService::findUsersByMultiValueInClause);
+    			userService::findUsersByTuples);
     	
     	BiConsumer<Integer, Integer> traceFindFunction = (index, numOfIds) -> {
     		var ids = LongStream.rangeClosed(1, numOfIds).boxed().toList();

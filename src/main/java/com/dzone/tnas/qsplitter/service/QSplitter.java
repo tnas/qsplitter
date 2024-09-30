@@ -22,16 +22,16 @@ public class QSplitter<T> {
 		
 		var groupedCollection = new ArrayList<List<List<T>>>();
 		
-		var splittedCollection = splitCollection(collection, MAX_ORACLE_IN_CLAUSE_ELEMENTS);
+		var splitCollection = splitCollection(collection, MAX_ORACLE_IN_CLAUSE_ELEMENTS);
 		
 		if (collection.size() <= MAX_ORACLE_RETRIEVE_ELEMENTS) {
-			groupedCollection.add(splittedCollection);
+			groupedCollection.add(splitCollection);
 			return groupedCollection;
 		}
 		
 		groupedCollection.add(new ArrayList<>());
 		
-		splittedCollection.forEach(partition -> {
+		splitCollection.forEach(partition -> {
 			
 			if (groupedCollection.getLast().size() * MAX_ORACLE_IN_CLAUSE_ELEMENTS + partition.size() > MAX_ORACLE_RETRIEVE_ELEMENTS) {
 				groupedCollection.add(new ArrayList<>());
