@@ -9,3 +9,5 @@ Six strategies were implemented:
 - Temporary Table
 - Union All of Expression Lists
 - Multivalued Expression List
+
+Access the DZone article to learn more details about the tool: [Workarounds for Oracle Restrictions on the Size of Expression Lists](https://dzone.com/articles/workarounds-for-oracle-restrictions)
