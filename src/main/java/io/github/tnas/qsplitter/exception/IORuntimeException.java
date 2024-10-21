@@ -1,4 +1,4 @@
-package com.dzone.tnas.qsplitter.exception;
+package io.github.tnas.qsplitter.exception;
 
 public class IORuntimeException extends RuntimeException {
 

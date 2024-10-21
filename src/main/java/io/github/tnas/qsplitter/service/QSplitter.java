@@ -1,4 +1,4 @@
-package com.dzone.tnas.qsplitter.service;
+package io.github.tnas.qsplitter.service;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -1,4 +1,4 @@
-package com.dzone.tnas.qsplitter.service;
+package io.github.tnas.qsplitter.service;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.dzone.tnas.qsplitter.dao.UserDao;
-import com.dzone.tnas.qsplitter.model.User;
+import io.github.tnas.qsplitter.dao.UserDao;
+import io.github.tnas.qsplitter.model.User;
 
 public class UserService {
 

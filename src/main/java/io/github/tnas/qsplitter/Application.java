@@ -1,4 +1,4 @@
-package com.dzone.tnas.qsplitter;
+package io.github.tnas.qsplitter;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -13,9 +13,9 @@ import java.util.stream.LongStream;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.dzone.tnas.qsplitter.model.User;
-import com.dzone.tnas.qsplitter.service.Tracer;
-import com.dzone.tnas.qsplitter.service.UserService;
+import io.github.tnas.qsplitter.model.User;
+import io.github.tnas.qsplitter.service.Tracer;
+import io.github.tnas.qsplitter.service.UserService;
 
 /**
  * https://stackoverflow.com/questions/17842453/is-there-a-workaround-for-ora-01795-maximum-number-of-expressions-in-a-list-is

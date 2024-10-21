@@ -1,4 +1,4 @@
-package com.dzone.tnas.qsplitter.service;
+package io.github.tnas.qsplitter.service;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,7 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 
-import com.dzone.tnas.qsplitter.exception.IORuntimeException;
+import io.github.tnas.qsplitter.exception.IORuntimeException;
 
 public class Tracer {
 

@@ -1,4 +1,4 @@
-package com.dzone.tnas.qsplitter.dao;
+package io.github.tnas.qsplitter.dao;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -19,10 +19,11 @@ import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.dzone.tnas.qsplitter.exception.IORuntimeException;
-import com.dzone.tnas.qsplitter.exception.SQLRuntimeException;
-import com.dzone.tnas.qsplitter.model.User;
 import com.github.javafaker.Faker;
+
+import io.github.tnas.qsplitter.exception.IORuntimeException;
+import io.github.tnas.qsplitter.exception.SQLRuntimeException;
+import io.github.tnas.qsplitter.model.User;
 
 public class UserDao {
 
