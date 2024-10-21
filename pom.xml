@@ -35,25 +35,18 @@
 			<version>5.4.33.Final</version>
 			<scope>provided</scope>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.hsqldb/hsqldb -->
 		<dependency>
 			<groupId>org.hsqldb</groupId>
 			<artifactId>hsqldb</artifactId>
 			<version>2.7.3</version>
+			<scope>test</scope>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.github.javafaker/javafaker -->
 		<dependency>
 			<groupId>com.github.javafaker</groupId>
 			<artifactId>javafaker</artifactId>
 			<version>1.0.2</version>
+			<scope>test</scope>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.oracle.database.jdbc/ojdbc11 -->
-		<dependency>
-			<groupId>com.oracle.database.jdbc</groupId>
-			<artifactId>ojdbc11</artifactId>
-			<version>23.5.0.24.07</version>
-		</dependency>
-
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-api</artifactId>
@@ -68,15 +61,8 @@
 	</dependencies>
 
 	<build>
-		<pluginManagement><!-- lock down plugins versions to avoid using Maven
-			defaults (may be moved to parent pom) -->
+		<pluginManagement>
 			<plugins>
-				<plugin>
-					<artifactId>maven-clean-plugin</artifactId>
-					<version>3.4.0</version>
-				</plugin>
-				<!-- default lifecycle, jar packaging: see
-				https://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_jar_packaging -->
 				<plugin>
 					<artifactId>maven-resources-plugin</artifactId>
 					<version>3.3.1</version>
@@ -84,6 +70,9 @@
 				<plugin>
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>3.13.0</version>
+					<configuration>
+						<release>17</release>
+					</configuration>
 				</plugin>
 				<plugin>
 					<artifactId>maven-toolchains-plugin</artifactId>
@@ -117,7 +106,6 @@
 					<artifactId>maven-dependency-plugin</artifactId>
 					<version>3.8.0</version>
 				</plugin>
-
 			</plugins>
 		</pluginManagement>
 		<plugins>
@@ -142,45 +130,36 @@
 					</toolchains>
 				</configuration>
 			</plugin>
-			<!-- mvn clean compile assembly:single -->
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<configuration>
-					<appendAssemblyId>false</appendAssemblyId>
-					<archive>
-						<manifest>
-							<mainClass>
-								com.dzone.tnas.qsplitter.Application
-							</mainClass>
-						</manifest>
-					</archive>
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
-				</configuration>
+				<groupId>org.bsc.maven</groupId>
+				<artifactId>maven-processor-plugin</artifactId>
+				<version>5.1</version>
 				<executions>
 					<execution>
-						<phase>package</phase>
+						<id>process-test</id>
 						<goals>
-							<goal>single</goal>
+							<goal>process-test</goal>
 						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>sources</goal>
-							<goal>resolve</goal>
-						</goals>
+						<phase>generate-test-sources</phase>
 						<configuration>
-							<classifier>javadoc</classifier>
+							<releaseVersion>17</releaseVersion>
+							<processors>
+								<processor>
+									org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor
+								</processor>
+							</processors>
+							<outputDirectory>
+								${project.basedir}/src/test/jpa-metamodel</outputDirectory>
 						</configuration>
 					</execution>
 				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>org.hibernate</groupId>
+						<artifactId>hibernate-jpamodelgen</artifactId>
+						<version>5.4.33.Final</version>
+					</dependency>
+				</dependencies>
 			</plugin>
 		</plugins>
 	</build>
