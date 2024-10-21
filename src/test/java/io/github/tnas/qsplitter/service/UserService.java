@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import io.github.tnas.qsplitter.QSplitter;
 import io.github.tnas.qsplitter.dao.UserDao;
 import io.github.tnas.qsplitter.model.User;
 

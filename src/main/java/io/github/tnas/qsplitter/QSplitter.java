@@ -1,4 +1,4 @@
-package io.github.tnas.qsplitter.service;
+package io.github.tnas.qsplitter;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,11 +33,12 @@ public class QSplitter<T> {
 		
 		splitCollection.forEach(partition -> {
 			
-			if (groupedCollection.getLast().size() * MAX_ORACLE_IN_CLAUSE_ELEMENTS + partition.size() > MAX_ORACLE_RETRIEVE_ELEMENTS) {
+			if (groupedCollection.get(groupedCollection.size() - 1).size() * MAX_ORACLE_IN_CLAUSE_ELEMENTS + partition.size() 
+				> MAX_ORACLE_RETRIEVE_ELEMENTS) {
 				groupedCollection.add(new ArrayList<>());
 			} 
 			
-			groupedCollection.getLast().add(partition);
+			groupedCollection.get(groupedCollection.size() - 1).add(partition);
 		});
 		
 		return groupedCollection;

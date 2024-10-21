@@ -54,13 +54,13 @@ public class UserDao {
 	
 	private Function<Collection<Long>, String> buildSimpleSelectIn = ids -> 
 			new StringBuilder()
-				.append("SELECT id, name, email, street_name, city, country FROM employee WHERE id IN (")
+				.append("SELECT id, name, email, streetname, city, country FROM user WHERE id IN (")
 				.append(ids.stream().map(Object::toString).collect(Collectors.joining(",")))
 				.append(")").append(ORDER_BY_ID)
 				.toString();
 	
 	private Function<List<List<Long>>, String> buildSelectDisjunctions = idsList -> 
-		new StringBuilder("SELECT id, name, email, street_name, city, country FROM employee WHERE ")
+		new StringBuilder("SELECT id, name, email, streetname, city, country FROM user WHERE ")
 				.append(idsList.stream()
 						.map(ids -> new StringBuilder()
 								.append("id IN (").append(ids.stream().map(Object::toString).collect(Collectors.joining(","))).append(")"))
@@ -69,42 +69,36 @@ public class UserDao {
 				.toString();
 		
 	private Function<List<Long>, String> buildSelectOfDisjunctions = ids -> 
-		new StringBuilder("SELECT id, name, email, street_name, city, country FROM employee WHERE ")
+		new StringBuilder("SELECT id, name, email, streetname, city, country FROM user WHERE ")
 				.append(ids.stream().map(id -> String.format("id = %d", id)).collect(Collectors.joining(" OR ")))
 				.append(ORDER_BY_ID)
 				.toString();
 	
 	private Function<Collection<Long>, String> buildSelectTuples = ids -> 
 		new StringBuilder()
-			.append("SELECT id, name, email, street_name, city, country FROM employee WHERE ('nil', id) IN (")
+			.append("SELECT id, name, email, streetname, city, country FROM employee WHERE ('nil', id) IN (")
 			.append(ids.stream().map(id -> String.format("('nil', %d)", id)).collect(Collectors.joining(",")))
 			.append(")")
 			.append(ORDER_BY_ID)
 			.toString();
 		
-	@SuppressWarnings("unused")
-	private Connection getHsqldbConnection() throws SQLException {
-		return DriverManager.getConnection("jdbc:hsqldb:file:src/main/resources/hsqldb/qsplitter", "dzone", "dzone");
-	}
-	
 	private Connection getConnection() throws SQLException {
-		return DriverManager.getConnection(this.datasource.getProperty("db.url"), 
-				this.datasource.getProperty("db.user"), this.datasource.getProperty("db.password"));
+		return DriverManager.getConnection("jdbc:hsqldb:file:src/test/resources/hsqldb/qsplitter", "dzone", "dzone");
 	}
 	
 	public void insertRandomCollection(int size) {
 	
-		var insertQuery = "INSERT INTO employee(name, email, street_name, city, country) VALUES(?, ?, ?, ?, ?)";
+		var insertQuery = "INSERT INTO user(name, email, streetname, city, country) VALUES(?, ?, ?, ?, ?)";
 		
 		try (var stmt = this.getConnection().prepareStatement(insertQuery)) {
 			
 			Consumer<User> addBatchUser = user -> {
 				try {
-					stmt.setString(1, user.name());
-					stmt.setString(2, user.email());
-					stmt.setString(3, user.streetName());
-					stmt.setString(4, user.city());
-					stmt.setString(5, user.country());
+					stmt.setString(1, user.getName());
+					stmt.setString(2, user.getEmail());
+					stmt.setString(3, user.getStreetName());
+					stmt.setString(4, user.getCity());
+					stmt.setString(5, user.getCountry());
 					stmt.addBatch();
 				} catch (SQLException ex) {
 					throw new SQLRuntimeException(ex);
@@ -127,7 +121,7 @@ public class UserDao {
 	
 	public List<User> findAll() {
 		
-		var selectQuery = "SELECT id, name, email, street_name, city, country FROM employee ORDER BY id";
+		var selectQuery = "SELECT id, name, email, streetname, city, country FROM user ORDER BY id";
 		
 		try (var rs = this.getConnection().createStatement().executeQuery(selectQuery)) {
 			var users = new ArrayList<User>();
@@ -190,10 +184,10 @@ public class UserDao {
 	
 	public List<User> findByTemporaryTable(List<Long> ids) {
 		
-		var queryInsertTempTable = "INSERT INTO employee_id (emp_id) VALUES (?)";
+		var queryInsertTempTable = "INSERT INTO id (user_id) VALUES (?)";
 		var querySelectUsers = """
-				SELECT id, name, email, street_name, city, country 
-				FROM employee JOIN employee_id ON id = emp_id ORDER BY id
+				SELECT id, name, email, streetname, city, country 
+				FROM user JOIN user_id ON id = user_id ORDER BY id
 				""";
 		
 		try (var conn = this.getConnection()) {
