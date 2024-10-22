@@ -8,14 +8,14 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.metamodel.SingularAttribute;
 
-public class DisjunctionsDao<E, T> extends QSplitterJpaDao<E, T> {
+public class DisjunctionsDao<E, T> extends QSplitterJpaDao<E, T, SingularAttribute<E, T>> {
 
 	public DisjunctionsDao(EntityManager em) {
 		super(em);
 	}
 	
 	@Override
-	public List<E> select(final List<T> ids, SingularAttribute<E, T> idAttribute, CriteriaQuery<E> criteriaQuery) {
+	public List<E> select(final List<T> ids, CriteriaQuery<E> criteriaQuery, SingularAttribute<E, T> idAttribute) {
 		
 		var entities = new ArrayList<E>();
 		var cb = em.getCriteriaBuilder();

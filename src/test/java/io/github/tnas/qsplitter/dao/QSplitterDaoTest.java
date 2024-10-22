@@ -9,6 +9,7 @@ import javax.persistence.Persistence;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import javax.persistence.metamodel.SingularAttribute;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,11 +17,11 @@ import org.junit.jupiter.api.Test;
 import io.github.tnas.qsplitter.model.User;
 import io.github.tnas.qsplitter.model.User_;
 
-abstract class QSplitterDaoTest {
+abstract class QSplitterDaoTest<R> {
 	
-	static final int TOTAL_RECORDS = 99765; // Nepal = 503
+	static final int TOTAL_RECORDS = 99765;
 	
-	QSplitterJpaDao<User, Long> qSplitterDao;
+	QSplitterJpaDao<User, Long, SingularAttribute<User, Long>> qSplitterDao;
 	
 	EntityManager em;
 	CriteriaBuilder builder;
@@ -42,7 +43,7 @@ abstract class QSplitterDaoTest {
 	void shouldSelectAmongFirst10KUsersFromNepal() {
 		var ids = LongStream.rangeClosed(1, TOTAL_RECORDS).boxed().toList();
 		this.query.where(builder.equal(root.get(User_.country), "Nepal"));
-		var entities = this.qSplitterDao.select(ids, User_.id, query);
+		var entities = this.qSplitterDao.select(ids, query, User_.id);
 		assertEquals(503, entities.size());
 	}
 }

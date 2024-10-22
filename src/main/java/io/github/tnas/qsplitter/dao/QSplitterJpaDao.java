@@ -10,7 +10,7 @@ import javax.persistence.metamodel.SingularAttribute;
 
 import io.github.tnas.qsplitter.QSplitter;
 
-public abstract class QSplitterJpaDao<E, T> {
+public abstract class QSplitterJpaDao<E, T, R> {
 
 	protected QSplitter<T> qSplitter;
 	protected EntityManager em;
@@ -20,7 +20,7 @@ public abstract class QSplitterJpaDao<E, T> {
 		this.em = em;
 	}
 
-	public abstract List<E> select(final List<T> ids, SingularAttribute<E, T> idAttribute, CriteriaQuery<E> criteriaQuery);
+	public abstract List<E> select(final List<T> ids, CriteriaQuery<E> criteriaQuery, R relationAttribute);
 	
 	@SuppressWarnings("unchecked")
 	protected Predicate getPredicateExpressionList(CriteriaQuery<E> criteriaQuery, SingularAttribute<E, T> idAttribute, List<T> ids) {

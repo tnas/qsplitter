@@ -5,12 +5,11 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import javax.persistence.metamodel.SingularAttribute;
 
-import io.github.tnas.qsplitter.TempTableRelation;
+import io.github.tnas.qsplitter.TableRelationship;
 import io.github.tnas.qsplitter.exception.ThrowingConsumerWrapper;
 
-public class TempTableDao<E, T, U> extends QSplitterJpaDao<E, T> {
+public class TempTableDao<E, T, U> extends QSplitterJpaDao<E, T, TableRelationship<E, T, U>> {
 
 	private final ThrowingConsumerWrapper wrapper;
 	
@@ -20,21 +19,17 @@ public class TempTableDao<E, T, U> extends QSplitterJpaDao<E, T> {
 	}
 	
 	@Override
-	public List<E> select(List<T> ids, SingularAttribute<E, T> idAttribute, CriteriaQuery<E> criteriaQuery) {
-		throw new UnsupportedOperationException();
-	}
-
 	@SuppressWarnings("unchecked")
-	public List<E> select(List<T> ids, CriteriaQuery<E> criteriaQuery, TempTableRelation<E, T, U> tempRelation) {
+	public List<E> select(List<T> ids, CriteriaQuery<E> criteriaQuery, TableRelationship<E, T, U> relationship) {
 
 		em.getTransaction().begin();
 		
 		ids.forEach(this.wrapper.wrap(id -> em.persist(
-				tempRelation.getTempClass().getConstructor(tempRelation.getKeyClass()).newInstance(id))));
+				relationship.getTempClass().getConstructor(relationship.getKeyClass()).newInstance(id))));
 		
 		em.getTransaction().commit();
 		
-		((Root<E>) criteriaQuery.getRoots().iterator().next()).join(tempRelation.getRelationAttribute());
+		((Root<E>) criteriaQuery.getRoots().iterator().next()).join(relationship.getRelationAttribute());
 		
 		return em.createQuery(criteriaQuery).getResultList();
 	}

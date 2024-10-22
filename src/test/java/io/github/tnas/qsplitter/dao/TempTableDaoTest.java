@@ -4,15 +4,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.stream.LongStream;
 
+import javax.persistence.metamodel.SingularAttribute;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import io.github.tnas.qsplitter.TempTableRelation;
+import io.github.tnas.qsplitter.TableRelationship;
 import io.github.tnas.qsplitter.model.User;
 import io.github.tnas.qsplitter.model.UserId;
 import io.github.tnas.qsplitter.model.User_;
 
-class TempTableDaoTest extends QSplitterDaoTest {
+class TempTableDaoTest extends QSplitterDaoTest<TableRelationship<UserId, Long, SingularAttribute<User, UserId>>> {
 
 	private TempTableDao<User, Long, UserId> qSplitterDao;
 	
@@ -35,7 +37,7 @@ class TempTableDaoTest extends QSplitterDaoTest {
 	void shouldSelectAmongFirst10KUsersFromNepal() {
 		var ids = LongStream.rangeClosed(1, TOTAL_RECORDS).boxed().toList();
 		this.query.where(builder.equal(root.get(User_.country), "Nepal"));
-		var tempRelation = new TempTableRelation<>(UserId.class, Long.class, User_.replicatedId);
+		var tempRelation = new TableRelationship<>(UserId.class, Long.class, User_.replicatedId);
 		var entities = this.qSplitterDao.select(ids, query, tempRelation);
 		assertEquals(503, entities.size());
 	}
