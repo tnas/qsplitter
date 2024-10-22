@@ -185,10 +185,7 @@ public class UserDao {
 	public List<User> findByTemporaryTable(List<Long> ids) {
 		
 		var queryInsertTempTable = "INSERT INTO id (user_id) VALUES (?)";
-		var querySelectUsers = """
-				SELECT id, name, email, streetname, city, country 
-				FROM user JOIN user_id ON id = user_id ORDER BY id
-				""";
+		var querySelectUsers = "SELECT id, name, email, streetname, city, country FROM user JOIN user_id ON id = user_id ORDER BY id";
 		
 		try (var conn = this.getConnection()) {
 			

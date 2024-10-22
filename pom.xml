@@ -4,18 +4,48 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.dzone.tnas</groupId>
+	<groupId>io.github.tnas</groupId>
 	<artifactId>qsplitter</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 
 	<name>qsplitter</name>
+	<description>Tool to assist in strategies against errors ORA-01795 and
+		ORA-00913</description>
 	<url>https://github.com/tnas/qsplitter</url>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.release>17</maven.compiler.release>
+		<maven.compiler.release>11</maven.compiler.release>
+		<hibernate.version>5.4.33.Final</hibernate.version>
+		<hsqldb.version>2.7.3</hsqldb.version>
+		<javafaker.version>1.0.2</javafaker.version>
 	</properties>
 
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<id>tnas</id>
+			<name>Thiago Nascimento</name>
+			<email>nascimenthiago@gmail.com</email>
+			<organizationUrl>http://nascimentothiago.rf.gd/</organizationUrl>
+		</developer>
+	</developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/tnas/qsplitter.git</connection>
+        <developerConnection>
+            scm:git:ssh://github.com:tnas/qsplitter.git
+        </developerConnection>
+        <url>https://github.com/tnas/qsplitter/tree/main</url>
+    </scm>
+    
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -32,30 +62,23 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
-			<version>5.4.33.Final</version>
-			<scope>provided</scope>
+			<version>${hibernate.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hsqldb</groupId>
 			<artifactId>hsqldb</artifactId>
-			<version>2.7.3</version>
+			<version>${hsqldb.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.github.javafaker</groupId>
 			<artifactId>javafaker</artifactId>
-			<version>1.0.2</version>
+			<version>${javafaker.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-api</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<!-- Optionally: parameterized tests support -->
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-params</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -76,7 +99,7 @@
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>3.13.0</version>
 					<configuration>
-						<release>17</release>
+						<release>11</release>
 					</configuration>
 				</plugin>
 				<plugin>
@@ -129,12 +152,13 @@
 				<configuration>
 					<toolchains>
 						<jdk>
-							<version>17</version>
+							<version>11</version>
 							<vendor>oracle</vendor>
 						</jdk>
 					</toolchains>
 				</configuration>
 			</plugin>
+			<!-- To generate/update metamodel: mvn test -->
 			<plugin>
 				<groupId>org.bsc.maven</groupId>
 				<artifactId>maven-processor-plugin</artifactId>
@@ -147,7 +171,7 @@
 						</goals>
 						<phase>generate-test-sources</phase>
 						<configuration>
-							<releaseVersion>17</releaseVersion>
+							<releaseVersion>11</releaseVersion>
 							<processors>
 								<processor>
 									org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor

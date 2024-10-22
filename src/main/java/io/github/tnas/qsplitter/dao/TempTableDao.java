@@ -6,7 +6,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-import io.github.tnas.qsplitter.TableRelationship;
 import io.github.tnas.qsplitter.exception.ThrowingConsumerWrapper;
 
 public class TempTableDao<E, T, U> extends QSplitterJpaDao<E, T, TableRelationship<E, T, U>> {

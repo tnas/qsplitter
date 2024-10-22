@@ -1,4 +1,4 @@
-package io.github.tnas.qsplitter;
+package io.github.tnas.qsplitter.dao;
 
 import javax.persistence.metamodel.SingularAttribute;
 

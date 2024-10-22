@@ -2,6 +2,7 @@ package io.github.tnas.qsplitter.dao;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
 import javax.persistence.EntityManager;
@@ -41,7 +42,7 @@ abstract class QSplitterDaoTest<R> {
 	
 	@Test
 	void shouldSelectAmongFirst10KUsersFromNepal() {
-		var ids = LongStream.rangeClosed(1, TOTAL_RECORDS).boxed().toList();
+		var ids = LongStream.rangeClosed(1, TOTAL_RECORDS).boxed().collect(Collectors.toList());
 		this.query.where(builder.equal(root.get(User_.country), "Nepal"));
 		var entities = this.qSplitterDao.select(ids, query, User_.id);
 		assertEquals(503, entities.size());
