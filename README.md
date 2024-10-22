@@ -16,6 +16,23 @@ Add this dependency to the `pom.xml`:
 
 The next sections describe how to the three implemented strategies.
 
+---
+Class Diagram (Example)
+---
+
+```mermaid
+classDiagram
+	User: -Long id
+	User: -String name
+	User: -String email
+	User: -String streetName
+	User: -String city
+	User: -String country
+class UserId
+    UserId: -Long id
+User "1" --> "1" UserId
+```
+
 ### N Queries
 
 ```java
