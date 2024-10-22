@@ -42,7 +42,7 @@ abstract class QSplitterDaoTest {
 	void shouldSelectAmongFirst10KUsersFromNepal() {
 		var ids = LongStream.rangeClosed(1, TOTAL_RECORDS).boxed().toList();
 		this.query.where(builder.equal(root.get(User_.country), "Nepal"));
-		var entities = this.qSplitterDao.select(ids, User_.id, query, em);
+		var entities = this.qSplitterDao.select(ids, User_.id, query);
 		assertEquals(503, entities.size());
 	}
 }

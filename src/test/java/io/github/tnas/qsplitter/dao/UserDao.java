@@ -21,7 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.github.javafaker.Faker;
 
-import io.github.tnas.qsplitter.exception.IORuntimeException;
+import io.github.tnas.qsplitter.exception.EntityManagerException;
 import io.github.tnas.qsplitter.exception.SQLRuntimeException;
 import io.github.tnas.qsplitter.model.User;
 
@@ -47,7 +47,7 @@ public class UserDao {
 				this.datasource.load(input);
 				Class.forName("oracle.jdbc.OracleDriver");
 			} catch (IOException | ClassNotFoundException ex) {
-				throw new IORuntimeException(ex);
+				throw new EntityManagerException(ex);
 			}
 		}
 	}

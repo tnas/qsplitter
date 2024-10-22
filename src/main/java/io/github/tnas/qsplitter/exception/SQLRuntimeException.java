@@ -1,9 +1,9 @@
 package io.github.tnas.qsplitter.exception;
 
 public class SQLRuntimeException extends RuntimeException {
-
+	
 	private static final long serialVersionUID = 1L;
-
+	
 	public SQLRuntimeException() {
 		super();
 	}

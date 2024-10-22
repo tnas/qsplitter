@@ -11,6 +11,10 @@ import javax.persistence.metamodel.SingularAttribute;
 
 public class NQueriesDao<E, T> extends QSplitterJpaDao<E, T> {
 
+	public NQueriesDao(EntityManager em) {
+		super(em);
+	}
+	
 	public List<E> select(final List<T> ids, final Function<List<T>, List<E>> selectQuery) {
 		
 		var entities = new ArrayList<E>();
@@ -24,7 +28,7 @@ public class NQueriesDao<E, T> extends QSplitterJpaDao<E, T> {
 	}
 	
 	@Override
-	public List<E> select(final List<T> ids, SingularAttribute<E, T> idAttribute, CriteriaQuery<E> criteriaQuery, EntityManager em) {
+	public List<E> select(final List<T> ids, SingularAttribute<E, T> idAttribute, CriteriaQuery<E> criteriaQuery) {
 		
 		var entities = new ArrayList<E>();
 		var cb = em.getCriteriaBuilder();

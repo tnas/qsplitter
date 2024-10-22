@@ -13,12 +13,14 @@ import io.github.tnas.qsplitter.QSplitter;
 public abstract class QSplitterJpaDao<E, T> {
 
 	protected QSplitter<T> qSplitter;
+	protected EntityManager em;
 
-	protected QSplitterJpaDao() {
+	protected QSplitterJpaDao(EntityManager em) {
 		this.qSplitter = new QSplitter<>();
+		this.em = em;
 	}
 
-	public abstract List<E> select(final List<T> ids, SingularAttribute<E, T> idAttribute, CriteriaQuery<E> criteriaQuery, EntityManager em);
+	public abstract List<E> select(final List<T> ids, SingularAttribute<E, T> idAttribute, CriteriaQuery<E> criteriaQuery);
 	
 	@SuppressWarnings("unchecked")
 	protected Predicate getPredicateExpressionList(CriteriaQuery<E> criteriaQuery, SingularAttribute<E, T> idAttribute, List<T> ids) {
