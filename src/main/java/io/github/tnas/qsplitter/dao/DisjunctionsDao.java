@@ -24,7 +24,7 @@ public class DisjunctionsDao<E, T> extends QSplitterDao<E, T> {
 			.forEach(subsetIds -> {
 				
 				subsetIds.stream()
-					.map(idsList -> this.getPredicateExpressionList(criteriaQuery, idAttribute, ids))
+					.map(idsList -> this.getPredicateExpressionList(criteriaQuery, idAttribute, idsList))
 					.forEach(predicates::add);
 				
 				restrictions[1] = cb.or(predicates.toArray(new Predicate[predicates.size()]));
