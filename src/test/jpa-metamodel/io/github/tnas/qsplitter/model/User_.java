@@ -10,6 +10,7 @@ public abstract class User_ {
 
 	public static volatile SingularAttribute<User, String> country;
 	public static volatile SingularAttribute<User, String> streetName;
+	public static volatile SingularAttribute<User, UserId> replicatedId;
 	public static volatile SingularAttribute<User, String> city;
 	public static volatile SingularAttribute<User, String> name;
 	public static volatile SingularAttribute<User, Long> id;
@@ -17,6 +18,7 @@ public abstract class User_ {
 
 	public static final String COUNTRY = "country";
 	public static final String STREET_NAME = "streetName";
+	public static final String REPLICATED_ID = "replicatedId";
 	public static final String CITY = "city";
 	public static final String NAME = "name";
 	public static final String ID = "id";

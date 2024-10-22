@@ -18,9 +18,9 @@ import io.github.tnas.qsplitter.model.User_;
 
 abstract class QSplitterDaoTest {
 	
-	private static final int TOTAL_RECORDS = 99765; // Nepal = 503
+	static final int TOTAL_RECORDS = 99765; // Nepal = 503
 	
-	QSplitterDao<User, Long> qSplitterDao;
+	QSplitterJpaDao<User, Long> qSplitterDao;
 	
 	EntityManager em;
 	CriteriaBuilder builder;

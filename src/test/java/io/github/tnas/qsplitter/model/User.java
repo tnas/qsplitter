@@ -3,6 +3,8 @@ package io.github.tnas.qsplitter.model;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -11,6 +13,10 @@ public class User {
 	
 	@Id
 	private Long id;
+	
+	@OneToOne
+	@JoinColumn(name = "id", referencedColumnName = "ID")
+	private UserId replicatedId;
 	
 	@Column
 	private String name;
@@ -85,4 +91,13 @@ public class User {
 	public void setCountry(String country) {
 		this.country = country;
 	}
+
+	public UserId getReplicatedId() {
+		return replicatedId;
+	}
+
+	public void setReplicatedId(UserId replicatedId) {
+		this.replicatedId = replicatedId;
+	}
+	
 }
