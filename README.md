@@ -13,12 +13,10 @@ Add this dependency to the `pom.xml`:
     <version>1.0.0</version>
 </dependency>
 ```
+## Class Diagram
 
-The next sections describe how to the three implemented strategies.
-
----
-Class Diagram (Example)
----
+To describe how to use the implemented strategies, assume the following classes
+presented in the diagram below.
 
 ```mermaid
 classDiagram
@@ -32,21 +30,53 @@ class UserId
     UserId: -Long id
 User "1" --> "1" UserId
 ```
+All strategies were implemented for JPA Criteria API. The next sections describe how to use
+the lib in the Java code.
 
-### N Queries
+## N Queries Strategy
 
 ```java
-static final int TOTAL_RECORDS = 99765;
-EntityManager em; // It must be supplied by the application
-var ids = LongStream.rangeClosed(1, TOTAL_RECORDS).boxed().collect(Collectors.toList());
+// Objects the must be supplied by the application
+EntityManager em;
+List<Long> ids;
+CriteriaQuery<User> query;
+
 var qSplitterDao = new NQueriesDao<User, Long>(em);
 var entities = this.qSplitterDao.select(ids, query, User_.id);
+
 assertEquals(503, entities.size());
 ```
 
-### Disjunctions of Expression Lists
+## Disjunctions of Expression Lists
 
-### Temporary Table
+```java
+static final int TOTAL_RECORDS = 99765;
+
+// Objects the must be supplied by the application
+EntityManager em; 
+List<Long> ids; 
+CriteriaQuery<User> query;
+
+var qSplitterDao = new DisjunctionsDao<User, Long>(em);
+var entities = this.qSplitterDao.select(ids, query, User_.id);
+
+assertEquals(503,entities.size());
+```
+
+## Temporary Table
+
+```java
+// Objects the must be supplied by the application
+EntityManager em;
+List<Long> ids;
+CriteriaQuery<User> query;
+
+var qSplitterDao = new TempTableDao<User, Long>(em);
+var tempRelation = new TableRelationship<User, Long, UserId>(UserId.class, Long.class, User_.replicatedId);
+var entities = this.qSplitterDao.select(ids, query, tempRelation);
+
+assertEquals(503,entities.size());
+```
 
 ## References
 
