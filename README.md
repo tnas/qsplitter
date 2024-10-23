@@ -36,7 +36,7 @@ the lib in the Java code.
 ## N Queries Strategy
 
 ```java
-// Objects the must be supplied by the application
+// Objects that must be provided by the application
 EntityManager em;
 List<Long> ids;
 CriteriaQuery<User> query;
@@ -52,7 +52,7 @@ assertEquals(503, entities.size());
 ```java
 static final int TOTAL_RECORDS = 99765;
 
-// Objects the must be supplied by the application
+// Objects that must be provided by the application
 EntityManager em; 
 List<Long> ids; 
 CriteriaQuery<User> query;
@@ -66,7 +66,7 @@ assertEquals(503,entities.size());
 ## Temporary Table
 
 ```java
-// Objects the must be supplied by the application
+// Objects that must be provided by the application
 EntityManager em;
 List<Long> ids;
 CriteriaQuery<User> query;
